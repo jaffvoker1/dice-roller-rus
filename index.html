@@ -3,132 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎲 Симулятор кубов D&D</title>
+    <title>🎲 Универсальный симулятор кубов D&D</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
-            box-sizing: border-box;
+            color: #e0e0e0;
         }
         
         .container {
-            background: white;
+            background: rgba(20, 20, 35, 0.8);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(200, 180, 140, 0.2);
         }
         
         h1 {
             text-align: center;
-            color: #333;
-            margin-bottom: 30px;
+            color: #c9b37c;
+            margin-bottom: 10px;
             font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(201, 179, 124, 0.3);
         }
         
+        .subtitle {
+            text-align: center;
+            color: #8a7b6b;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        /* Кнопки кубов */
         .dice-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 12px;
+            margin-bottom: 25px;
         }
         
         .dice-btn {
             padding: 15px;
-            font-size: 1.2em;
+            font-size: 1.3em;
             font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            border: 2px solid;
+            border-radius: 12px;
+            background: rgba(15, 15, 25, 0.8);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            color: #e0e0e0;
         }
+        
+        .dice-btn.d2 { border-color: #ff6b6b; }
+        .dice-btn.d4 { border-color: #4ecdc4; }
+        .dice-btn.d6 { border-color: #ffe66d; }
+        .dice-btn.d8 { border-color: #a8e6cf; }
+        .dice-btn.d10 { border-color: #ff8b94; }
+        .dice-btn.d12 { border-color: #b8a9e6; }
+        .dice-btn.d20 { border-color: #c9b37c; }
+        .dice-btn.d100 { border-color: #95e1d3; }
         
         .dice-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
         }
         
-        .dice-btn:active {
-            transform: translateY(0);
-        }
+        .dice-btn.d2:hover { background: rgba(255, 107, 107, 0.2); }
+        .dice-btn.d4:hover { background: rgba(78, 205, 196, 0.2); }
+        .dice-btn.d6:hover { background: rgba(255, 230, 109, 0.2); }
+        .dice-btn.d8:hover { background: rgba(168, 230, 207, 0.2); }
+        .dice-btn.d10:hover { background: rgba(255, 139, 148, 0.2); }
+        .dice-btn.d12:hover { background: rgba(184, 169, 230, 0.2); }
+        .dice-btn.d20:hover { background: rgba(201, 179, 124, 0.2); }
+        .dice-btn.d100:hover { background: rgba(149, 225, 211, 0.2); }
         
+        /* Поле ввода */
         .input-section {
-            background: #f8f9fa;
+            background: rgba(15, 15, 25, 0.5);
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 20px;
+            border: 1px solid rgba(201, 179, 124, 0.15);
         }
         
         .input-group {
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }
         
         .input-field {
             flex: 1;
-            padding: 15px;
-            font-size: 1.1em;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
+            min-width: 250px;
+            padding: 15px 20px;
+            font-size: 1.2em;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(201, 179, 124, 0.3);
+            border-radius: 12px;
+            color: #e0e0e0;
             outline: none;
-            transition: border-color 0.2s;
+            font-family: 'Courier New', monospace;
         }
         
         .input-field:focus {
-            border-color: #667eea;
+            border-color: #c9b37c;
+            box-shadow: 0 0 15px rgba(201, 179, 124, 0.2);
+        }
+        
+        .input-field::placeholder {
+            color: #6a6a8a;
+            font-size: 0.9em;
         }
         
         .roll-btn {
             padding: 15px 30px;
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: bold;
             border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #c9b37c, #a89060);
+            color: #1a1a2e;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
         }
         
         .roll-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(201, 179, 124, 0.3);
         }
         
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .mode-btn {
+            padding: 8px 20px;
+            border: 1px solid rgba(201, 179, 124, 0.3);
+            border-radius: 20px;
+            background: transparent;
+            color: #8a7b6b;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        
+        .mode-btn.active {
+            background: rgba(201, 179, 124, 0.2);
+            border-color: #c9b37c;
+            color: #c9b37c;
+        }
+        
+        .mode-btn:hover {
+            border-color: #c9b37c;
+            color: #c9b37c;
+        }
+        
+        .hint-text {
+            color: #6a6a8a;
+            font-size: 0.85em;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .hint-text kbd {
+            background: rgba(201, 179, 124, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #c9b37c;
+            margin: 0 4px;
+        }
+        
+        /* Результат */
         .result-section {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            background: linear-gradient(135deg, rgba(201, 179, 124, 0.1), rgba(160, 140, 90, 0.05));
             padding: 25px;
             border-radius: 15px;
             margin-bottom: 20px;
             text-align: center;
+            border: 1px solid rgba(201, 179, 124, 0.2);
         }
         
         .result-number {
-            font-size: 4em;
+            font-size: 4.5em;
             font-weight: bold;
-            color: #2d3436;
+            color: #c9b37c;
+            text-shadow: 0 0 30px rgba(201, 179, 124, 0.3);
             margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .result-details {
             font-size: 1.2em;
-            color: #636e72;
-            margin-bottom: 10px;
+            color: #b0b0c0;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
         }
         
+        .dice-results-visual {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .die-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 45px;
+            height: 45px;
+            padding: 0 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2em;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid;
+        }
+        
+        .die-badge.critical {
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .die-badge.max {
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+        }
+        
+        .die-badge.min {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        
+        .die-badge.normal {
+            border-color: #6a6a8a;
+            color: #c0c0d0;
+        }
+        
+        /* История */
         .history-section {
-            background: #f8f9fa;
+            background: rgba(15, 15, 25, 0.5);
             padding: 20px;
             border-radius: 15px;
+            border: 1px solid rgba(201, 179, 124, 0.15);
         }
         
         .history-header {
@@ -141,193 +272,460 @@
         .history-title {
             font-size: 1.3em;
             font-weight: bold;
-            color: #333;
+            color: #c9b37c;
+        }
+        
+        .history-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .history-btn {
+            padding: 6px 12px;
+            background: rgba(201, 179, 124, 0.1);
+            border: 1px solid rgba(201, 179, 124, 0.3);
+            border-radius: 5px;
+            color: #c9b37c;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85em;
+        }
+        
+        .history-btn:hover {
+            background: rgba(201, 179, 124, 0.2);
         }
         
         .clear-btn {
-            padding: 8px 16px;
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.2s;
+            background: rgba(139, 0, 0, 0.2);
+            border-color: rgba(139, 0, 0, 0.3);
+            color: #ffaaaa;
         }
         
         .clear-btn:hover {
-            background: #c82333;
+            background: rgba(139, 0, 0, 0.3);
         }
         
         .history-list {
-            max-height: 300px;
+            max-height: 250px;
             overflow-y: auto;
         }
         
         .history-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            background: white;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #c9b37c;
             font-family: 'Courier New', monospace;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 0.95em;
+            color: #b0b0c0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .example-text {
-            color: #6c757d;
-            font-size: 0.9em;
-            margin-top: 5px;
+        .history-item:hover {
+            background: rgba(201, 179, 124, 0.1);
         }
         
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
-            font-size: 0.9em;
+        .history-item-left {
+            flex: 1;
         }
         
+        .history-expression {
+            color: #c9b37c;
+            font-weight: bold;
+        }
+        
+        .history-result {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4ecdc4;
+            margin-left: 15px;
+        }
+        
+        .history-details {
+            font-size: 0.85em;
+            opacity: 0.7;
+            margin-top: 3px;
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .history-action-btn {
+            padding: 4px 8px;
+            background: transparent;
+            border: 1px solid rgba(201, 179, 124, 0.3);
+            border-radius: 4px;
+            color: #8a7b6b;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s;
+        }
+        
+        .history-action-btn:hover {
+            background: rgba(201, 179, 124, 0.2);
+            color: #c9b37c;
+        }
+        
+        .empty-history {
+            text-align: center;
+            color: #6a6a8a;
+            padding: 20px;
+        }
+        
+        /* Адаптивность */
         @media (max-width: 600px) {
-            .dice-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .input-group {
-                flex-direction: column;
+            .container {
+                padding: 15px;
             }
             
             h1 {
                 font-size: 2em;
             }
             
+            .dice-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            
+            .dice-btn {
+                padding: 10px;
+                font-size: 1em;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-field {
+                min-width: 100%;
+            }
+            
+            .roll-btn {
+                width: 100%;
+            }
+            
             .result-number {
                 font-size: 3em;
+            }
+            
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .history-result {
+                margin-left: 0;
+                margin-top: 8px;
+            }
+            
+            .history-actions {
+                margin-top: 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎲 Симулятор кубов</h1>
+        <h1>🎲 СИМУЛЯТОР КУБОВ</h1>
+        <div class="subtitle">Dungeons & Dragons • Универсальная система</div>
         
-        <!-- Кнопки быстрого выбора кубов -->
+        <!-- Кнопки быстрого выбора -->
         <div class="dice-grid">
-            <button class="dice-btn" onclick="quickRoll(2)">D2</button>
-            <button class="dice-btn" onclick="quickRoll(4)">D4</button>
-            <button class="dice-btn" onclick="quickRoll(6)">D6</button>
-            <button class="dice-btn" onclick="quickRoll(8)">D8</button>
-            <button class="dice-btn" onclick="quickRoll(10)">D10</button>
-            <button class="dice-btn" onclick="quickRoll(12)">D12</button>
-            <button class="dice-btn" onclick="quickRoll(20)">D20</button>
-            <button class="dice-btn" onclick="quickRoll(100)">D100</button>
+            <button class="dice-btn d2" onclick="quickRoll(2)">D2 / К2</button>
+            <button class="dice-btn d4" onclick="quickRoll(4)">D4 / К4</button>
+            <button class="dice-btn d6" onclick="quickRoll(6)">D6 / К6</button>
+            <button class="dice-btn d8" onclick="quickRoll(8)">D8 / К8</button>
+            <button class="dice-btn d10" onclick="quickRoll(10)">D10 / К10</button>
+            <button class="dice-btn d12" onclick="quickRoll(12)">D12 / К12</button>
+            <button class="dice-btn d20" onclick="quickRoll(20)">D20 / К20</button>
+            <button class="dice-btn d100" onclick="quickRoll(100)">D100 / К100</button>
         </div>
         
-        <!-- Секция ручного ввода -->
+        <!-- Поле ввода -->
         <div class="input-section">
             <div class="input-group">
                 <input type="text" 
                        id="diceInput" 
                        class="input-field" 
-                       placeholder="Например: 3D6+2, D20-1, 2D4"
-                       onkeypress="handleKeyPress(event)">
-                <button class="roll-btn" onclick="rollFromInput()">Бросить!</button>
+                       placeholder="Например: 3D6+2, К20, 2к8-1, (15+7)/2"
+                       onkeypress="handleKeyPress(event)"
+                       autocomplete="off">
+                <button class="roll-btn" onclick="processInput()">🎲 Бросить</button>
             </div>
-            <div class="example-text">
-                📝 Форматы: 3D6+2, D20-1, 2D4, +5
+            
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="auto" onclick="setMode('auto')">Авто</button>
+                <button class="mode-btn" data-mode="dice" onclick="setMode('dice')">Только кубы</button>
+                <button class="mode-btn" data-mode="calc" onclick="setMode('calc')">Калькулятор</button>
             </div>
-            <div id="errorMessage" class="error-message"></div>
+            
+            <div class="hint-text">
+                <kbd>D</kbd> или <kbd>К</kbd> — кубы • <kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd> — операции • <kbd>( )</kbd> — скобки • клик по истории — вставить
+            </div>
         </div>
         
-        <!-- Секция результата -->
-        <div class="result-section">
-            <div class="result-details" id="resultDetails">Введите команду для броска</div>
+        <!-- Результат -->
+        <div class="result-section" id="resultSection">
+            <div class="result-details" id="resultDetails">Введите выражение</div>
             <div class="result-number" id="resultNumber">—</div>
+            <div class="dice-results-visual" id="diceVisual"></div>
         </div>
         
-        <!-- Секция истории -->
+        <!-- История -->
         <div class="history-section">
             <div class="history-header">
-                <span class="history-title">📜 История (последние 15)</span>
-                <button class="clear-btn" onclick="clearHistory()">Очистить</button>
+                <span class="history-title">📜 История вычислений</span>
+                <div class="history-controls">
+                    <button class="history-btn" onclick="copyLastResult()">📋 Копировать</button>
+                    <button class="history-btn clear-btn" onclick="clearHistory()">🗑️ Очистить</button>
+                </div>
             </div>
             <div class="history-list" id="historyList">
-                <div class="history-item">История пуста</div>
+                <div class="empty-history">История пуста</div>
             </div>
         </div>
     </div>
 
     <script>
-        // История бросков (максимум 15)
+        // Состояние
         let history = [];
-        const MAX_HISTORY = 15;
+        const MAX_HISTORY = 20;
+        let currentMode = 'auto';
+        let lastRolls = [];
         
         // Доступные кубы
         const availableDice = [2, 4, 6, 8, 10, 12, 20, 100];
         
-        // Парсинг ввода
-        function parseInput(input) {
-            input = input.toUpperCase().replace(/\s/g, '');
-            
-            // Паттерн для XDY+Z или XDY-Z или DY+Z
-            const pattern = /^(\d*)D(\d+)([+-]\d+)?$/;
-            const match = input.match(pattern);
-            
-            if (match) {
-                const count = match[1] ? parseInt(match[1]) : 1;
-                const sides = parseInt(match[2]);
-                const modifier = match[3] ? parseInt(match[3]) : 0;
-                
-                return { count, sides, modifier, isValid: true };
-            }
-            
-            // Проверяем, просто число (модификатор)
-            if (/^[+-]?\d+$/.test(input)) {
-                return { count: 0, sides: 0, modifier: parseInt(input), isValid: true };
-            }
-            
-            return { isValid: false };
+        // Инициализация
+        function init() {
+            updateHistoryDisplay();
+            loadHistory();
         }
         
-        // Бросок кубиков
-        function rollDice(count, sides, modifier) {
-            const rolls = [];
-            let sum = 0;
+        // Установка режима
+        function setMode(mode) {
+            currentMode = mode;
             
-            if (count > 0 && sides > 0) {
-                for (let i = 0; i < count; i++) {
-                    const roll = Math.floor(Math.random() * sides) + 1;
-                    rolls.push(roll);
-                    sum += roll;
-                }
-            }
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
             
-            const total = sum + modifier;
-            
-            let details = '';
-            if (count > 0 && sides > 0) {
-                details = `${count}D${sides}: [${rolls.join(', ')}]`;
-                if (modifier !== 0) {
-                    details += ` ${modifier >= 0 ? '+' : ''}${modifier}`;
-                }
-                details += ` = ${total}`;
+            const input = document.getElementById('diceInput');
+            if (mode === 'dice') {
+                input.placeholder = "Только кубы: 3D6+2, К20, 2к8-1";
+            } else if (mode === 'calc') {
+                input.placeholder = "Калькулятор: 15+7*2, (100-25)/5";
             } else {
-                details = `Модификатор: ${modifier >= 0 ? '+' : ''}${modifier}`;
+                input.placeholder = "Кубы и вычисления: 3D6+2, К20, (2к8+5)/2";
             }
-            
-            return { total, details, rolls };
         }
         
-        // Обновление отображения результата
-        function updateResult(total, details) {
-            document.getElementById('resultNumber').textContent = total;
+        // Нормализация ввода (замена К на D, обработка пробелов)
+        function normalizeInput(input) {
+            return input
+                .toUpperCase()
+                .replace(/\s/g, '')
+                .replace(/К/g, 'D')
+                .replace(/,/g, '.');
+        }
+        
+        // Проверка, является ли строка математическим выражением
+        function isMathExpression(str) {
+            return /^[\d\s\+\-\*\/\(\)\.]+$/.test(str) && !/[A-ZА-Я]/i.test(str);
+        }
+        
+        // Проверка, содержит ли строка кубы
+        function hasDice(str) {
+            return /D\d+/i.test(str);
+        }
+        
+        // Бросок куба
+        function rollDie(sides) {
+            return Math.floor(Math.random() * sides) + 1;
+        }
+        
+        // Парсинг и вычисление выражения с кубами
+        function evaluateExpression(expr) {
+            const normalized = normalizeInput(expr);
+            const rolls = [];
+            
+            // Заменяем все XDY на результаты бросков
+            let evaluable = normalized;
+            const dicePattern = /(\d*)D(\d+)/gi;
+            
+            evaluable = evaluable.replace(dicePattern, (match, count, sides) => {
+                const numDice = count ? parseInt(count) : 1;
+                const numSides = parseInt(sides);
+                
+                if (numDice > 100) {
+                    throw new Error('Слишком много кубов (макс. 100)');
+                }
+                
+                const results = [];
+                for (let i = 0; i < numDice; i++) {
+                    const roll = rollDie(numSides);
+                    results.push(roll);
+                    rolls.push({
+                        sides: numSides,
+                        value: roll,
+                        isCritical: roll === numSides,
+                        isFumble: roll === 1
+                    });
+                }
+                
+                const sum = results.reduce((a, b) => a + b, 0);
+                return sum.toString();
+            });
+            
+            // Вычисляем результат
+            try {
+                const result = Function('"use strict"; return (' + evaluable + ')')();
+                return { result, rolls, expression: normalized };
+            } catch (e) {
+                throw new Error('Ошибка в выражении');
+            }
+        }
+        
+        // Вычисление математического выражения
+        function evaluateMath(expr) {
+            const normalized = expr.replace(/\s/g, '').replace(/,/g, '.');
+            
+            if (!/^[\d\s\+\-\*\/\(\)\.]+$/.test(normalized)) {
+                throw new Error('Недопустимые символы в выражении');
+            }
+            
+            try {
+                const result = Function('"use strict"; return (' + normalized + ')')();
+                return { result, rolls: [], expression: normalized };
+            } catch (e) {
+                throw new Error('Ошибка в выражении');
+            }
+        }
+        
+        // Основная обработка ввода
+        function processInput() {
+            const input = document.getElementById('diceInput').value.trim();
+            
+            if (!input) return;
+            
+            try {
+                let result, rolls, expression;
+                
+                const normalized = normalizeInput(input);
+                const isMath = isMathExpression(normalized);
+                const hasDiceExpr = hasDice(normalized);
+                
+                // Проверка режима
+                if (currentMode === 'dice' && !hasDiceExpr) {
+                    throw new Error('В режиме "Только кубы" необходимо использовать D или К');
+                }
+                
+                if (currentMode === 'calc' && hasDiceExpr) {
+                    throw new Error('В режиме "Калькулятор" кубы не поддерживаются');
+                }
+                
+                // Вычисление
+                if (hasDiceExpr) {
+                    const evalResult = evaluateExpression(input);
+                    result = evalResult.result;
+                    rolls = evalResult.rolls;
+                    expression = input;
+                } else if (isMath) {
+                    const evalResult = evaluateMath(input);
+                    result = evalResult.result;
+                    rolls = [];
+                    expression = input;
+                } else {
+                    throw new Error('Неверный формат выражения');
+                }
+                
+                // Отображение результата
+                displayResult(result, rolls, expression);
+                
+                // Добавление в историю
+                addToHistory(expression, result, rolls);
+                
+                // Очистка поля
+                document.getElementById('diceInput').value = '';
+                
+            } catch (error) {
+                displayError(error.message);
+            }
+        }
+        
+        // Отображение результата
+        function displayResult(result, rolls, expression) {
+            const roundedResult = Number.isInteger(result) ? result : result.toFixed(2);
+            document.getElementById('resultNumber').textContent = roundedResult;
+            
+            let details = expression;
+            if (rolls.length > 0) {
+                const diceSum = rolls.reduce((sum, r) => sum + r.value, 0);
+                if (expression !== diceSum.toString()) {
+                    details = `${expression} = ${result}`;
+                }
+            }
             document.getElementById('resultDetails').textContent = details;
-            document.getElementById('errorMessage').textContent = '';
+            
+            // Визуализация кубов
+            const visualContainer = document.getElementById('diceVisual');
+            visualContainer.innerHTML = '';
+            
+            if (rolls.length > 0) {
+                rolls.forEach(roll => {
+                    const badge = document.createElement('span');
+                    badge.className = 'die-badge';
+                    
+                    if (roll.isCritical) {
+                        badge.classList.add('critical');
+                    } else if (roll.isFumble) {
+                        badge.classList.add('min');
+                    } else {
+                        badge.classList.add('normal');
+                    }
+                    
+                    badge.textContent = `d${roll.sides}: ${roll.value}`;
+                    visualContainer.appendChild(badge);
+                });
+            }
+            
+            lastRolls = rolls;
+        }
+        
+        // Отображение ошибки
+        function displayError(message) {
+            document.getElementById('resultNumber').textContent = '❌';
+            document.getElementById('resultDetails').textContent = message;
+            document.getElementById('diceVisual').innerHTML = '';
+        }
+        
+        // Быстрый бросок
+        function quickRoll(sides) {
+            document.getElementById('diceInput').value = `D${sides}`;
+            processInput();
+        }
+        
+        // Обработка Enter
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                processInput();
+            }
         }
         
         // Добавление в историю
-        function addToHistory(command, total, details) {
+        function addToHistory(expression, result, rolls) {
             const record = {
-                command: command,
-                total: total,
-                details: details,
+                expression: expression,
+                result: Number.isInteger(result) ? result : result.toFixed(2),
+                rolls: rolls.map(r => ({ sides: r.sides, value: r.value })),
                 timestamp: new Date().toLocaleTimeString()
             };
             
@@ -338,74 +736,75 @@
             }
             
             updateHistoryDisplay();
+            saveHistory();
         }
         
         // Обновление отображения истории
         function updateHistoryDisplay() {
-            const historyElement = document.getElementById('historyList');
+            const container = document.getElementById('historyList');
             
             if (history.length === 0) {
-                historyElement.innerHTML = '<div class="history-item">История пуста</div>';
+                container.innerHTML = '<div class="empty-history">История пуста</div>';
                 return;
             }
             
-            historyElement.innerHTML = history.map((record, index) => {
+            container.innerHTML = history.map((record, index) => {
+                const rollsText = record.rolls.length > 0 
+                    ? record.rolls.map(r => `d${r.sides}:${r.value}`).join(', ')
+                    : '';
+                
                 return `
-                    <div class="history-item">
-                        ${(index + 1).toString().padStart(2, ' ')}. ${record.command.padEnd(12)} → ${record.total.toString().padStart(4)} | ${record.details}
+                    <div class="history-item" onclick="useHistoryItem(${index})">
+                        <div class="history-item-left">
+                            <span class="history-expression">${record.expression}</span>
+                            <div class="history-details">${rollsText}</div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="history-result">${record.result}</span>
+                            <div class="history-actions" onclick="event.stopPropagation()">
+                                <button class="history-action-btn" onclick="insertExpression('${record.expression}')" title="Вставить выражение">📝</button>
+                                <button class="history-action-btn" onclick="insertResult(${record.result})" title="Вставить результат">📊</button>
+                                <button class="history-action-btn" onclick="addToExpression(' + ${record.result}')" title="Добавить к выражению">➕</button>
+                            </div>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
         
-        // Основная функция броска
-        function performRoll(input) {
-            const parsed = parseInput(input);
-            
-            if (!parsed.isValid) {
-                document.getElementById('errorMessage').textContent = 
-                    '❌ Неверный формат. Используйте: 3D6+2, D20, или +5';
-                return false;
-            }
-            
-            const { count, sides, modifier } = parsed;
-            
-            if (count > 100) {
-                document.getElementById('errorMessage').textContent = 
-                    '⚠️ Слишком много кубов. Максимум 100.';
-                return false;
-            }
-            
-            const { total, details } = rollDice(count, sides, modifier);
-            
-            updateResult(total, details);
-            addToHistory(input, total, details);
-            
-            return true;
+        // Использование элемента истории
+        function useHistoryItem(index) {
+            const record = history[index];
+            insertExpression(record.expression);
         }
         
-        // Бросок из поля ввода
-        function rollFromInput() {
-            const input = document.getElementById('diceInput').value.trim();
-            
-            if (input) {
-                performRoll(input);
-                document.getElementById('diceInput').value = '';
-            }
+        // Вставка выражения
+        function insertExpression(expr) {
+            const input = document.getElementById('diceInput');
+            input.value = expr;
+            input.focus();
         }
         
-        // Быстрый бросок одного куба
-        function quickRoll(sides) {
-            const input = `D${sides}`;
-            document.getElementById('diceInput').value = input;
-            performRoll(input);
-            document.getElementById('diceInput').value = '';
+        // Вставка результата
+        function insertResult(result) {
+            const input = document.getElementById('diceInput');
+            input.value = result.toString();
+            input.focus();
         }
         
-        // Обработка нажатия Enter
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                rollFromInput();
+        // Добавление к выражению
+        function addToExpression(text) {
+            const input = document.getElementById('diceInput');
+            input.value += text;
+            input.focus();
+        }
+        
+        // Копирование последнего результата
+        function copyLastResult() {
+            if (history.length > 0) {
+                const lastResult = history[0].result;
+                navigator.clipboard?.writeText(lastResult.toString());
+                showNotification(`Результат ${lastResult} скопирован`, 'success');
             }
         }
         
@@ -413,12 +812,69 @@
         function clearHistory() {
             history = [];
             updateHistoryDisplay();
+            saveHistory();
         }
         
-        // Фокус на поле ввода при загрузке
-        window.onload = function() {
-            document.getElementById('diceInput').focus();
-        };
+        // Уведомление
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                background: ${type === 'success' ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)'};
+                color: white;
+                border-radius: 8px;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+        
+        // Сохранение истории
+        function saveHistory() {
+            try {
+                localStorage.setItem('diceHistory', JSON.stringify(history));
+            } catch (e) {}
+        }
+        
+        // Загрузка истории
+        function loadHistory() {
+            try {
+                const saved = localStorage.getItem('diceHistory');
+                if (saved) {
+                    history = JSON.parse(saved);
+                    updateHistoryDisplay();
+                }
+            } catch (e) {}
+        }
+        
+        // Добавление стиля для анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Запуск
+        init();
     </script>
 </body>
 </html>
